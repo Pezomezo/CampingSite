@@ -1,12 +1,12 @@
 package tech;
 
 public class DBSingleton {
-    private static DBFasade instance;
+    private static DBFacade instance;
 
 
-    public static DBFasade getInstance() throws Exception{
+    public static DBFacade getInstance() throws Exception{
         if (instance == null){
-            instance = new DBFasade();
+            instance = new DBFacade();
         }
         return instance;
     }
