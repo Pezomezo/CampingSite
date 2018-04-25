@@ -2,9 +2,10 @@ package sample;
 
 import domain.Inventory;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.layout.Pane;
@@ -13,7 +14,6 @@ import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class Shop {
-    ObservableList<Inventory> items = FXCollections.observableArrayList();
     public void shopSetUp(){
         Stage stage = new Stage();
         Pane pane = new Pane();
@@ -21,13 +21,6 @@ public class Shop {
 
         VBox vBox = new VBox();
         pane.getChildren().add(vBox);
-
-
-        items.add(new Inventory(1, 5, 0, "Staff can use it to clean", "Staff", "Broom", 0, "Cleaning"));
-        items.add(new Inventory(2, 50, 10, "fizzy water to drink", "Customers", "Fizzy Water", 0, null));
-        items.add(new Inventory(3, 50, 15, "beverage", "Customers", "Fanta", 0, null));
-        items.add(new Inventory(4, 50, 15, "beverage", "Customers", "Cola", 0, null));
-        items.add(new Inventory(5, 50, 15, "beverage", "Customers", "FaxaCondi", 0, null));
 
         TableView<Inventory> customerShop = new TableView<>();
 
@@ -48,16 +41,41 @@ public class Shop {
         });
 
         TableColumn price = new TableColumn("price");
-        name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Inventory,Integer>, ObservableValue>() {
+        name.setCellValueFactory(new Callback<TableColumn.CellDataFeatures<Inventory,Double>, ObservableValue>() {
             @Override
-            public ObservableValue call(TableColumn.CellDataFeatures<Inventory,Integer> param) {
+            public ObservableValue call(TableColumn.CellDataFeatures<Inventory,Double> param) {
                 return param.getValue().getItemPrice();
             }
         });
-        customerShop.getColumns().addAll(name,description,price);
-        customerShop.setItems(items);
 
-        vBox.getChildren().addAll(customerShop);
+        Button addToBasket = new Button("Basket");
+        addToBasket.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event) {
+                Basket basket = new Basket();
+                basket.basketView(customerShop.getSelectionModel().getSelectedItem());
+            }
+        });
+
+        Button buy = new Button("Buy");
+        buy.setOnAction(new EventHandler<ActionEvent>() {
+            @Override
+            public void handle(ActionEvent event){
+
+                try {
+                    Inventory toBeEdited = customerShop.getSelectionModel().getSelectedItem();
+                    PaymentView paymentView = new PaymentView();
+                    paymentView.payment(toBeEdited);
+                } catch (Exception e) {
+                    e.getCause();
+                }
+            }
+        });
+
+        customerShop.getColumns().addAll(name,description,price);
+        customerShop.setItems(Inventory.itemObsList);
+
+        vBox.getChildren().addAll(customerShop,buy,addToBasket);
 
         stage.setScene(scene);
         stage.setTitle("Shop");

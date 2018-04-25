@@ -1,6 +1,10 @@
 package domain;
 
 import javafx.beans.property.*;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+
+import java.util.ArrayList;
 
 public class Inventory {
     private int itemID;
@@ -11,6 +15,7 @@ public class Inventory {
     private StringProperty itemName;
     private IntegerProperty ItemAmountInUse;
     private StringProperty department;
+    public static ObservableList<Inventory> itemObsList;
 
     public Inventory(int itemID, int itemTotalAmount, double itemPrice, String itemDescription, String availableFor, String itemName, int itemAmountInUse, String department) {
         this.itemTotalAmount = new SimpleIntegerProperty(itemID);
@@ -20,10 +25,16 @@ public class Inventory {
         this.itemName = new SimpleStringProperty(itemName);
         ItemAmountInUse = new SimpleIntegerProperty(itemAmountInUse);
         this.department = new SimpleStringProperty( department);
+        itemObsList = FXCollections.observableArrayList();
     }
+
+    public static ArrayList<Inventory> itemArrayList = new ArrayList<>();
 
     public IntegerProperty getItemTotalAmount() {
         return itemTotalAmount;
+    }
+    public int getTotalAmount(){
+        return itemTotalAmount.get();
     }
 
     public int getItemID() {
@@ -42,8 +53,16 @@ public class Inventory {
         return itemPrice;
     }
 
+    public double getPrice(){
+        return itemPrice.get();
+    }
+
     public void setItemPrice(double itemPrice) {
         this.itemPrice.setValue(itemPrice);
+    }
+
+    public String getDescription(){
+        return this.itemDescription.get();
     }
 
     public StringProperty getItemDescription() {
@@ -58,8 +77,16 @@ public class Inventory {
         return availableFor;
     }
 
+    public String getAvailability(){
+        return availableFor.get();
+    }
+
     public void setAvailableFor(String availableFor) {
         this.availableFor.set(availableFor);
+    }
+
+    public String getName(){
+        return this.itemName.get();
     }
 
     public StringProperty getItemName() {
@@ -74,8 +101,16 @@ public class Inventory {
         ItemAmountInUse.set(itemAmountInUse);
     }
 
-    public StringProperty getDepartment() {
+    public int getAmountInUse(){
+        return ItemAmountInUse.get();
+    }
+
+    public StringProperty getItemDepartment() {
         return department;
+    }
+
+    public String getDepartment(){
+        return department.get();
     }
 
     public void setDepartment(String department) {

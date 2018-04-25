@@ -1,7 +1,5 @@
 package tech;
-import domain.Administrator;
-import domain.Customer;
-import domain.Staff;
+import domain.*;
 
 import java.sql.*;
 
@@ -18,34 +16,38 @@ public class DBFacade {
         this.port = "1433";
         this.databaseName = "DBCAMPINGSITE";
     }
-    private void connect() throws Exception {
-        Class.forName("com.microsoft.sqlserver.jdbc.SQLServerDriver").newInstance();
-        con = DriverManager.getConnection("jdbc:sqlserver://localhost:" + this.port + ";databaseName=" + this.databaseName, this.username, this.password);
+
+
+
+        public void addItem(Inventory item) throws Exception {
+        DB.insertSQL("INSERT INTO tblInventory VALUES ("+item.getItemID()+","+item.getTotalAmount()+","+item.getTotalAmount()+","+item.getPrice()+","+item.getDescription()+","+item.getAvailability()+","+item.getName()+","+item.getAmountInUse()+","+item.getDepartment()+")"  );
+
+            Inventory.itemObsList.add(item);
     }
 
-    public void addCustomer(Customer customer) throws Exception {
-        connect();
-        PreparedStatement ps = con.prepareCall("INSERT INTO tbl_User VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
-        ps.setString(1, customer.getUserName() );
-        ps.setString(2, customer.getPassword() );
-        ps.setString(3,customer.getForName());
-        ps.setString(4,customer.getSurName());
-        ps.setInt(5, customer.getPhoneNO());
-        ps.setString(6,customer.getEmail());
-        ps.setInt(7,(int)customer.getSalary());
-        ps.setInt(8,customer.getZipCode());
-        ps.setString(9,customer.getStreetName());
-        ps.setInt(10,customer.getHouseNo());
-        ps.setString(11,customer.getDepartment());
+    public void addFacilities(Facilities facilitie) throws Exception {
+        DB.insertSQL("INSERT INTO tblFacilities VALUES(");
+        PreparedStatement ps = con.prepareCall("INSERT INTO tblFacilities VALUES (?,?,?,?)");
+        ps.setInt(1,facilitie.getFacilID());
+    }
 
+    public void updateItemAmount(Inventory selectedItem,int amount) throws Exception {
+        int newAmount = selectedItem.getTotalAmount()-amount;
+        PreparedStatement ps = con.prepareCall("UPDATE tblInventory SET fld_ItemTotalAmount = ? WHERE fld_ItemID = ? ");
+        ps.setInt(1,newAmount);
+        ps.setInt(2,selectedItem.getItemID());
         ResultSet rs = ps.executeQuery();
         rs.close();
     }
 
+    public void addCustomer(Customer customer) throws Exception {
+        DB.insertSQL("INSERT INTO tblUser VALUES ("+customer.getUserName()+","+customer.getPassword()+","+customer.getForName()+","+customer.getSurName()+","+customer.getPhoneNO()+","+customer.getEmail()+","+customer.getSalary()+","+customer.getZipCode()+","+customer.getStreetName()+","+customer.getHouseNo()+","+customer.getDepartment());
+    }
+
 
     public void addStaffMember(Staff staff) throws Exception {
-        connect();
-        PreparedStatement staffPs = con.prepareCall("INSERT INTO tbl_User VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
+
+        PreparedStatement staffPs = con.prepareCall("INSERT INTO tblUser VALUES (?,?,?,?,?,?,?,?,?,?,?,?)");
         staffPs.setString(1, staff.getUserName() );
         staffPs.setString(2, staff.getPassword() );
         staffPs.setString(3,staff.getForName());
@@ -65,9 +67,9 @@ public class DBFacade {
 
 
     public void addAdministrator(Administrator administrator) throws Exception {
-        connect();
 
-        PreparedStatement pss = con.prepareCall("INSERT INTO tbl_User VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL )");
+
+        PreparedStatement pss = con.prepareCall("INSERT INTO tblUser VALUES (?,?,?,?,?,?,?,?,?,?,?,NULL )");
         pss.setString(1, administrator.getUserName() );
         pss.setString(2, administrator.getPassword() );
         pss.setString(3,administrator.getForName());
@@ -85,16 +87,9 @@ public class DBFacade {
     }
 
 
-    private void displayMetaData() throws Exception {
-        connect();
-        DatabaseMetaData dbmd = con.getMetaData();
-
-    }
-
-
     public static void main(String[] args) throws Exception {
         DBFacade app = new DBFacade();
-        app.displayMetaData();
+
     }
 
 }
